@@ -68,7 +68,7 @@ public class Dandelion extends Application {
 
         scene = new Scene(root);
         primaryStage.setTitle(NAME);
-        primaryStage.getIcons().add(new Image("icon/dandelion.png"));
+        primaryStage.getIcons().add(new Image("img/dandelion.png"));
 
         primaryStage.setScene(scene);
         primaryStage.setOnCloseRequest(e -> Platform.exit());

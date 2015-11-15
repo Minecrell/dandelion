@@ -29,7 +29,6 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.control.Alert;
-import javafx.scene.control.Dialog;
 import javafx.scene.control.DialogPane;
 import net.minecrell.dandelion.Dandelion;
 
@@ -38,7 +37,7 @@ import java.io.IOException;
 public final class MainController  {
 
     private Dandelion dandelion;
-    private Dialog<?> aboutDialog;
+    private Alert aboutDialog;
 
     @FXML
     private void initialize() {

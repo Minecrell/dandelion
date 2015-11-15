@@ -1,5 +1,5 @@
 .alert.about.dialog-pane {
-    -fx-graphic: url('/icon/dandelion_48.png');
+    -fx-graphic: url('/img/dandelion_48.png');
 }
 
 .about .copyright {
