@@ -26,13 +26,22 @@ import javafx.beans.property.StringProperty;
 import javafx.scene.control.Hyperlink;
 import net.minecrell.dandelion.Dandelion;
 
+import java.io.IOException;
+
 public class WebLink extends Hyperlink {
 
     public WebLink() {
         setOnAction(event -> {
-            try {
-                Dandelion.getInstance().getHostServices().showDocument(getUrl());
+            String url = getUrl();
+
+            try { // First try the JavaFX way to open URLs (doesn't seem to be supported everywhere)
+                Dandelion.getInstance().getHostServices().showDocument(url);
             } catch (Throwable ignored) {
+            }
+
+            try { // Try the Linux way instead
+                new ProcessBuilder("xdg-open", url).start();
+            } catch (IOException ignored) {
             }
         });
     }
