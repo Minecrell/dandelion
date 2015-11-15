@@ -8,6 +8,6 @@
     <Text text="&#10;&#10;"/>
     <Text>Dandelion is open source software available under the MIT License.</Text>
     <Text text="&#10;"/>
-    <Text>The source code is available on GitHub. </Text>
+    <Text>The source code is available on GitHub.</Text>
     <WebLink url="https://git.io/dandelion">https://git.io/dandelion</WebLink>
 </TextFlow>
