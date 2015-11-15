@@ -24,7 +24,6 @@ package net.minecrell.dandelion;
 import static com.google.common.base.Preconditions.checkState;
 
 import javafx.application.Application;
-import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -71,7 +70,6 @@ public class Dandelion extends Application {
         primaryStage.getIcons().add(new Image("img/dandelion.png"));
 
         primaryStage.setScene(scene);
-        primaryStage.setOnCloseRequest(e -> Platform.exit());
         primaryStage.show();
     }
 
