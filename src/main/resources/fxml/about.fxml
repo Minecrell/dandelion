@@ -2,12 +2,11 @@
 
 <?import javafx.scene.text.Text?>
 <?import javafx.scene.text.TextFlow?>
-<?import net.minecrell.dandelion.ui.util.WebLink?>
+<?import net.minecrell.dandelion.ui.control.WebLink?>
+<?import net.minecrell.dandelion.ui.text.NewLine?>
 <TextFlow xmlns="http://javafx.com/javafx/8.0.65" xmlns:fx="http://javafx.com/fxml/1">
-    <Text styleClass="copyright">Copyright (c) 2015, Minecrell.</Text>
-    <Text text="&#10;&#10;"/>
-    <Text>Dandelion is open source software available under the MIT License.</Text>
-    <Text text="&#10;"/>
+    <Text styleClass="copyright">Copyright (c) 2015, Minecrell.</Text><NewLine/><NewLine/>
+    <Text>Dandelion is open source software available under the MIT License.</Text><NewLine/>
     <Text>The source code is available on GitHub.</Text>
     <WebLink url="https://git.io/dandelion">https://git.io/dandelion</WebLink>
 </TextFlow>

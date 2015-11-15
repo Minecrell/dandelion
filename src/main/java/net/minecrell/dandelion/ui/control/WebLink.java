@@ -19,7 +19,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package net.minecrell.dandelion.ui.util;
+package net.minecrell.dandelion.ui.control;
 
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
