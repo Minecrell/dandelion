@@ -8,7 +8,8 @@
 <?import javafx.scene.control.TreeView?>
 <?import javafx.scene.layout.VBox?>
 <?import org.fxmisc.richtext.CodeArea?>
-<VBox xmlns="http://javafx.com/javafx/8.0.65" xmlns:fx="http://javafx.com/fxml/1" prefWidth="1280" prefHeight="720">
+<VBox xmlns="http://javafx.com/javafx/8.0.65" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="net.minecrell.dandelion.ui.MainController" prefWidth="1280" prefHeight="720">
     <MenuBar>
         <Menu mnemonicParsing="false" text="File">
             <MenuItem mnemonicParsing="false" text="Open…"/>
@@ -18,7 +19,7 @@
             <MenuItem mnemonicParsing="false" text="Save"/>
             <MenuItem mnemonicParsing="false" text="Save As…"/>
             <SeparatorMenuItem mnemonicParsing="false"/>
-            <MenuItem mnemonicParsing="false" text="Quit"/>
+            <MenuItem mnemonicParsing="false" text="Quit" onAction="#onCloseClick"/>
         </Menu>
         <Menu mnemonicParsing="false" text="Edit">
             <MenuItem mnemonicParsing="false" text="Undo"/>
