@@ -1,0 +1,95 @@
+// Apply Gradle plugins
+plugins {
+    id 'java'
+    id 'eclipse'
+    id 'idea'
+
+    id 'com.github.hierynomus.license' version '0.11.0'
+    id 'com.github.johnrengelman.shadow' version '1.2.2'
+}
+
+defaultTasks 'clean', 'licenseFormat', 'build'
+
+// Project information
+group = 'net.minecrell'
+version = '1.0.0-SNAPSHOT'
+
+sourceCompatibility = '1.8'
+targetCompatibility = '1.8'
+
+// Project repositories
+repositories {
+    mavenCentral()
+    maven {
+        name = 'forge'
+        url = 'http://files.minecraftforge.net/maven'
+    }
+}
+
+// Project dependencies
+dependencies {
+    compile 'com.google.guava:guava:18.0'
+    compile 'net.minecraftforge:fernflower:2.0-SNAPSHOT'
+    compile 'org.fxmisc.richtext:richtextfx:0.6.10'
+
+    testCompile 'junit:junit:4.12'
+}
+
+// Read source files using UTF-8
+tasks.withType(JavaCompile) {
+    options.encoding = 'UTF-8'
+}
+
+test {
+    testLogging {
+        showStandardStreams = true
+        exceptionFormat = 'full'
+    }
+}
+
+processResources {
+    from 'LICENSE'
+}
+
+jar {
+    classifier = 'base'
+
+    manifest {
+        attributes(
+                'Implementation-Title': project.name,
+                'Implementation-Version': version,
+                'Main-Class': 'net.minecrell.dandelion.Dandelion'
+        )
+    }
+}
+
+shadowJar {
+    classifier = ''
+}
+
+// License header formatting
+license {
+    header = file('LICENSE')
+    include '**/*.java'
+
+    ignoreFailures = false
+    strictCheck = true
+
+    mapping {
+        java = 'SLASHSTAR_STYLE'
+    }
+}
+
+task sourceJar(type: Jar) {
+    classifier = 'sources'
+    from sourceSets.main.allSource
+}
+
+artifacts {
+    archives shadowJar
+    archives sourceJar
+}
+
+task wrapper(type: Wrapper) {
+    gradleVersion = '2.8'
+}
