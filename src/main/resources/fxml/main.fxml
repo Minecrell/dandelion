@@ -19,7 +19,7 @@
             <MenuItem mnemonicParsing="false" text="Save"/>
             <MenuItem mnemonicParsing="false" text="Save As…"/>
             <SeparatorMenuItem mnemonicParsing="false"/>
-            <MenuItem mnemonicParsing="false" text="Quit" onAction="#onCloseClick"/>
+            <MenuItem mnemonicParsing="false" text="Quit" onAction="#close"/>
         </Menu>
         <Menu mnemonicParsing="false" text="Edit">
             <MenuItem mnemonicParsing="false" text="Undo"/>
@@ -36,7 +36,7 @@
             <MenuItem mnemonicParsing="false" text="Preferences…"/>
         </Menu>
         <Menu mnemonicParsing="false" text="Help">
-            <MenuItem mnemonicParsing="false" text="About"/>
+            <MenuItem mnemonicParsing="false" text="About" onAction="#showAbout"/>
         </Menu>
     </MenuBar>
     <SplitPane dividerPositions="0.25" VBox.vgrow="ALWAYS">

@@ -1,0 +1,7 @@
+.alert.about.dialog-pane {
+    -fx-graphic: url('/icon/dandelion_48.png');
+}
+
+.about .copyright {
+    -fx-font-weight: bold;
+}
