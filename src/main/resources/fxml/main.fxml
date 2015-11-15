@@ -12,28 +12,27 @@
       fx:controller="net.minecrell.dandelion.ui.MainController" prefWidth="1280" prefHeight="720">
     <MenuBar>
         <Menu mnemonicParsing="false" text="File">
-            <MenuItem mnemonicParsing="false" text="Open…"/>
-            <Menu mnemonicParsing="false" text="Open Recent"/>
+            <MenuItem mnemonicParsing="false" text="Open…" disable="true"/>
+            <Menu mnemonicParsing="false" text="Open Recent" disable="true"/>
             <SeparatorMenuItem mnemonicParsing="false"/>
-            <MenuItem mnemonicParsing="false" text="Close"/>
-            <MenuItem mnemonicParsing="false" text="Save"/>
-            <MenuItem mnemonicParsing="false" text="Save As…"/>
+            <MenuItem mnemonicParsing="false" text="Save…" disable="true"/>
+            <MenuItem mnemonicParsing="false" text="Close" disable="true"/>
             <SeparatorMenuItem mnemonicParsing="false"/>
             <MenuItem mnemonicParsing="false" text="Quit" onAction="#close"/>
         </Menu>
         <Menu mnemonicParsing="false" text="Edit">
-            <MenuItem mnemonicParsing="false" text="Undo"/>
-            <MenuItem mnemonicParsing="false" text="Redo"/>
+            <MenuItem mnemonicParsing="false" text="Undo" disable="true"/>
+            <MenuItem mnemonicParsing="false" text="Redo" disable="true"/>
             <SeparatorMenuItem mnemonicParsing="false"/>
-            <MenuItem mnemonicParsing="false" text="Cut"/>
-            <MenuItem mnemonicParsing="false" text="Copy"/>
-            <MenuItem mnemonicParsing="false" text="Paste"/>
-            <MenuItem mnemonicParsing="false" text="Delete"/>
+            <MenuItem mnemonicParsing="false" text="Cut" disable="true"/>
+            <MenuItem mnemonicParsing="false" text="Copy" disable="true"/>
+            <MenuItem mnemonicParsing="false" text="Paste" disable="true"/>
+            <MenuItem mnemonicParsing="false" text="Delete" disable="true"/>
             <SeparatorMenuItem mnemonicParsing="false"/>
-            <MenuItem mnemonicParsing="false" text="Select All"/>
-            <MenuItem mnemonicParsing="false" text="Unselect All"/>
+            <MenuItem mnemonicParsing="false" text="Select All" disable="true"/>
+            <MenuItem mnemonicParsing="false" text="Unselect All" disable="true"/>
             <SeparatorMenuItem mnemonicParsing="false"/>
-            <MenuItem mnemonicParsing="false" text="Preferences…"/>
+            <MenuItem mnemonicParsing="false" text="Preferences…" disable="true"/>
         </Menu>
         <Menu mnemonicParsing="false" text="Help">
             <MenuItem mnemonicParsing="false" text="About" onAction="#showAbout"/>
