@@ -11,31 +11,31 @@
 <VBox xmlns="http://javafx.com/javafx/8.0.65" xmlns:fx="http://javafx.com/fxml/1"
       fx:controller="net.minecrell.dandelion.ui.MainController" prefWidth="1280" prefHeight="720">
     <MenuBar>
-        <Menu mnemonicParsing="false" text="File">
-            <MenuItem mnemonicParsing="false" text="Open…" disable="true"/>
+        <Menu text="_File">
+            <MenuItem text="_Open…" disable="true"/>
             <Menu mnemonicParsing="false" text="Open Recent" disable="true"/>
             <SeparatorMenuItem mnemonicParsing="false"/>
-            <MenuItem mnemonicParsing="false" text="Save…" disable="true"/>
-            <MenuItem mnemonicParsing="false" text="Close" disable="true"/>
+            <MenuItem text="_Save…" disable="true"/>
+            <MenuItem text="_Close" disable="true"/>
             <SeparatorMenuItem mnemonicParsing="false"/>
-            <MenuItem mnemonicParsing="false" text="Quit" onAction="#close"/>
+            <MenuItem text="_Quit" onAction="#close"/>
         </Menu>
-        <Menu mnemonicParsing="false" text="Edit">
-            <MenuItem mnemonicParsing="false" text="Undo" disable="true"/>
-            <MenuItem mnemonicParsing="false" text="Redo" disable="true"/>
+        <Menu text="_Edit">
+            <MenuItem text="_Undo" disable="true"/>
+            <MenuItem text="_Redo" disable="true"/>
             <SeparatorMenuItem mnemonicParsing="false"/>
             <MenuItem mnemonicParsing="false" text="Cut" disable="true"/>
-            <MenuItem mnemonicParsing="false" text="Copy" disable="true"/>
-            <MenuItem mnemonicParsing="false" text="Paste" disable="true"/>
-            <MenuItem mnemonicParsing="false" text="Delete" disable="true"/>
+            <MenuItem text="_Copy" disable="true"/>
+            <MenuItem text="_Paste" disable="true"/>
+            <MenuItem text="_Delete" disable="true"/>
             <SeparatorMenuItem mnemonicParsing="false"/>
             <MenuItem mnemonicParsing="false" text="Select All" disable="true"/>
             <MenuItem mnemonicParsing="false" text="Unselect All" disable="true"/>
             <SeparatorMenuItem mnemonicParsing="false"/>
-            <MenuItem mnemonicParsing="false" text="Preferences…" disable="true"/>
+            <MenuItem text="_Preferences…" disable="true"/>
         </Menu>
-        <Menu mnemonicParsing="false" text="Help">
-            <MenuItem mnemonicParsing="false" text="About" onAction="#showAbout"/>
+        <Menu text="_Help">
+            <MenuItem text="_About" onAction="#showAbout"/>
         </Menu>
     </MenuBar>
     <SplitPane dividerPositions="0.25" VBox.vgrow="ALWAYS">
