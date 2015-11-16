@@ -12,7 +12,7 @@
       fx:controller="net.minecrell.dandelion.ui.MainController" prefWidth="1280" prefHeight="720">
     <MenuBar>
         <Menu text="_File">
-            <MenuItem text="_Open…" disable="true"/>
+            <MenuItem text="_Open…" onAction="#openFile"/>
             <Menu mnemonicParsing="false" text="Open Recent" disable="true"/>
             <SeparatorMenuItem mnemonicParsing="false"/>
             <MenuItem text="_Save…" disable="true"/>

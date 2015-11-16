@@ -30,18 +30,46 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.control.Alert;
 import javafx.scene.control.DialogPane;
+import javafx.stage.FileChooser;
 import net.minecrell.dandelion.Dandelion;
 
+import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 
 public final class MainController  {
 
     private Dandelion dandelion;
+
+    private FileChooser openFileChooser;
     private Alert aboutDialog;
 
     @FXML
     private void initialize() {
         dandelion = Dandelion.getInstance();
+    }
+
+    @FXML
+    private void openFile() throws IOException {
+        if (openFileChooser == null) {
+            openFileChooser = new FileChooser();
+            openFileChooser.setTitle("Select JAR or class file");
+            openFileChooser.getExtensionFilters().addAll(
+                    new FileChooser.ExtensionFilter("JAR file", "*.jar"),
+                    new FileChooser.ExtensionFilter("Class file", "*.class"),
+                    new FileChooser.ExtensionFilter("All files", "*")
+            );
+        }
+
+        File file = openFileChooser.showOpenDialog(dandelion.getPrimaryStage());
+        if (file != null) {
+            Path path = file.toPath();
+            if (Files.exists(path)) {
+                System.out.println(path.toAbsolutePath());
+            }
+        }
+
     }
 
     @FXML
