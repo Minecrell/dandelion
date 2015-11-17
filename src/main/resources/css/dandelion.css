@@ -5,3 +5,26 @@
 .about .copyright {
     -fx-font-weight: bold;
 }
+
+/* Syntax Highlighting */
+.keyword {
+    -fx-fill: purple;
+    -fx-font-weight: bold;
+}
+
+.semicolon {
+    -fx-font-weight: bold;
+}
+
+.paren, .bracket, .brace {
+    -fx-fill: darkgray;
+    -fx-font-weight: bold;
+}
+
+.string {
+    -fx-fill: blue;
+}
+
+.comment {
+	-fx-fill: lightgray;
+}

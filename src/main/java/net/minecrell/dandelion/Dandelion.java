@@ -66,6 +66,8 @@ public class Dandelion extends Application {
         Parent root = loader.load();
 
         scene = new Scene(root);
+        scene.getStylesheets().add("css/dandelion.css");
+
         primaryStage.setTitle(NAME);
         primaryStage.getIcons().add(new Image("img/dandelion.png"));
 

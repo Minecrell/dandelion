@@ -38,6 +38,7 @@ import javafx.scene.input.MouseEvent;
 import javafx.stage.FileChooser;
 import net.minecrell.dandelion.Dandelion;
 import net.minecrell.dandelion.decompiler.DandelionDecompiler;
+import net.minecrell.dandelion.ui.syntax.JavaSyntaxHighlighting;
 import org.fxmisc.richtext.CodeArea;
 import org.fxmisc.richtext.LineNumberFactory;
 
@@ -155,6 +156,7 @@ public final class MainController  {
         CodeArea code = new CodeArea(text);
         code.setParagraphGraphicFactory(LineNumberFactory.get(code));
         code.setEditable(false);
+        JavaSyntaxHighlighting.highlight(code);
 
         Tab tab = new Tab(name);
         tab.setContent(code);
