@@ -21,14 +21,14 @@
  */
 package net.minecrell.dandelion.ui.syntax;
 
+import org.fxmisc.richtext.CodeArea;
+import org.fxmisc.richtext.StyleSpans;
+import org.fxmisc.richtext.StyleSpansBuilder;
+
 import java.util.Collection;
 import java.util.Collections;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import org.fxmisc.richtext.CodeArea;
-import org.fxmisc.richtext.StyleSpans;
-import org.fxmisc.richtext.StyleSpansBuilder;
 
 public final class JavaSyntaxHighlighting {
 

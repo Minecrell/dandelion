@@ -25,6 +25,8 @@ import static javafx.scene.control.Alert.AlertType.INFORMATION;
 import static net.minecrell.dandelion.Dandelion.NAME;
 import static net.minecrell.dandelion.Dandelion.VERSION;
 
+import com.google.common.collect.HashMultimap;
+import com.google.common.collect.Multimap;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
@@ -47,16 +49,14 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Enumeration;
-import java.util.Map;
-import java.util.Set;
-import java.util.TreeMap;
-import java.util.TreeSet;
+import java.util.stream.Collectors;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
 public final class MainController  {
 
     private static final String CLASS_EXTENSION = ".class";
+    private static final String DEFAULT_PACKAGE = "(Default package)";
 
     private Dandelion dandelion;
 
@@ -97,8 +97,7 @@ public final class MainController  {
     }
 
     private void openFile(Path openedPath) throws IOException {
-        Map<String, TreeItem<String>> packages = new TreeMap<>();
-        Set<TreeItem<String>> rootFiles = new TreeSet<>();
+        Multimap<String, String> classes = HashMultimap.create();
 
         System.out.println("Scanning " + openedPath.toAbsolutePath() + " for classes");
 
@@ -122,20 +121,28 @@ public final class MainController  {
                     }
 
                     System.out.println("Found " + pack + ": " + name);
-
-                    TreeItem<String> parent = packages.computeIfAbsent(pack, TreeItem::new);
-                    parent.getChildren().add(new TreeItem<>(name));
+                    classes.put(pack, name);
                 } else if (name.indexOf('$') == -1) {
                     name = name.substring(0, name.length() - CLASS_EXTENSION.length());
                     System.out.println("Found in root: " + name);
 
-                    rootFiles.add(new TreeItem<>(name));
+                    classes.put(DEFAULT_PACKAGE, name);
                 }
             }
         }
 
-        packageRoot.getChildren().addAll(packages.values());
-        packageRoot.getChildren().addAll(rootFiles);
+        // TODO: Don't code when tired
+        packageRoot.getChildren().addAll(classes.keySet().stream()
+                .sorted()
+                .map(pack -> {
+                    TreeItem<String> root = new TreeItem<>(pack);
+                    root.getChildren().addAll(classes.get(pack).stream()
+                            .sorted()
+                            .map(TreeItem::new)
+                            .collect(Collectors.toList()));
+                    return root;
+                })
+                .collect(Collectors.toList()));
 
         // Create Fernflower context
         this.decompiler = new DandelionDecompiler(openedPath);
@@ -146,7 +153,13 @@ public final class MainController  {
         if (event.getClickCount() >= 2) {
             TreeItem<String> item = packageView.getSelectionModel().getSelectedItem();
             if (item != null && item.getParent().getValue() != null) {
-                String path = item.getParent().getValue().replace('.', '/') + '/' + item.getValue();
+                String path;
+                if (item.getParent().getValue().equals(DEFAULT_PACKAGE)) {
+                    path = item.getValue();
+                } else {
+                    path = item.getParent().getValue().replace('.', '/') + '/' + item.getValue();
+                }
+
                 System.out.println("Open: " + path);
                 openClass(item.getValue(), path);
             }
