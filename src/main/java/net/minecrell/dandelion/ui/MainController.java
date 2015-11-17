@@ -117,12 +117,15 @@ public final class MainController  {
                 if (pos >= 0) {
                     String pack = name.substring(0, pos).replace('/', '.');
                     name = name.substring(pos + 1, name.length() - CLASS_EXTENSION.length());
+                    if (name.indexOf('$') >= 0) {
+                        continue;
+                    }
 
                     System.out.println("Found " + pack + ": " + name);
 
                     TreeItem<String> parent = packages.computeIfAbsent(pack, TreeItem::new);
                     parent.getChildren().add(new TreeItem<>(name));
-                } else {
+                } else if (name.indexOf('$') == -1) {
                     name = name.substring(0, name.length() - CLASS_EXTENSION.length());
                     System.out.println("Found in root: " + name);
 
