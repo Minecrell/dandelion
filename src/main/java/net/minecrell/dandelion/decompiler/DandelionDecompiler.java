@@ -32,6 +32,7 @@ import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.stream.Stream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
@@ -43,6 +44,16 @@ public class DandelionDecompiler implements IBytecodeProvider, AutoCloseable {
         this.fernflower = new Fernflower(this, NullResourceSaver.INSTANCE, null, new PrintStreamLogger(System.out));
         this.fernflower.getStructContext().addSpace(source.toFile(), true);
         this.fernflower.decompileContext(false);
+    }
+
+    public Stream<String> getClasses() {
+        return this.fernflower.getStructContext().getClasses().values().stream()
+                .map(structClass -> structClass.qualifiedName);
+    }
+
+    public String decompile(String name) {
+        StructClass structClass = this.fernflower.getStructContext().getClass(name);
+        return this.fernflower.getClassContent(structClass);
     }
 
     @Override
@@ -58,11 +69,6 @@ public class DandelionDecompiler implements IBytecodeProvider, AutoCloseable {
         } else {
             return Files.readAllBytes(path);
         }
-    }
-
-    public String decompile(String name) {
-        StructClass structClass = this.fernflower.getStructContext().getClass(name);
-        return this.fernflower.getClassContent(structClass);
     }
 
     @Override

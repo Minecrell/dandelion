@@ -48,10 +48,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.Enumeration;
 import java.util.stream.Collectors;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipFile;
 
 public final class MainController  {
 
@@ -97,41 +94,31 @@ public final class MainController  {
     }
 
     private void openFile(Path openedPath) throws IOException {
+        closeFile();
+
+        // Create Fernflower context
+        this.decompiler = new DandelionDecompiler(openedPath);
+
+        // TODO: Optimize class scanning (Don't code when tired)
         Multimap<String, String> classes = HashMultimap.create();
 
-        System.out.println("Scanning " + openedPath.toAbsolutePath() + " for classes");
-
-        try (ZipFile zip = new ZipFile(openedPath.toFile())) {
-            Enumeration<? extends ZipEntry> entries = zip.entries();
-            while (entries.hasMoreElements()) {
-                ZipEntry entry = entries.nextElement();
-                // TODO: Display all files
-                if (!entry.getName().endsWith(CLASS_EXTENSION)) {
-                    continue;
+        this.decompiler.getClasses().forEach(name -> {
+            int pos = name.lastIndexOf('/');
+            if (pos >= 0) {
+                String pack = name.substring(0, pos).replace('/', '.');
+                name = name.substring(pos + 1);
+                if (name.indexOf('$') >= 0) {
+                    return;
                 }
 
-                String name = entry.getName();
-
-                int pos = name.lastIndexOf('/');
-                if (pos >= 0) {
-                    String pack = name.substring(0, pos).replace('/', '.');
-                    name = name.substring(pos + 1, name.length() - CLASS_EXTENSION.length());
-                    if (name.indexOf('$') >= 0) {
-                        continue;
-                    }
-
-                    System.out.println("Found " + pack + ": " + name);
-                    classes.put(pack, name);
-                } else if (name.indexOf('$') == -1) {
-                    name = name.substring(0, name.length() - CLASS_EXTENSION.length());
-                    System.out.println("Found in root: " + name);
-
-                    classes.put(DEFAULT_PACKAGE, name);
-                }
+                System.out.println("Found " + pack + ": " + name);
+                classes.put(pack, name);
+            } else if (name.indexOf('$') == -1) {
+                System.out.println("Found in root: " + name);
+                classes.put(DEFAULT_PACKAGE, name);
             }
-        }
+        });
 
-        // TODO: Don't code when tired
         packageRoot.getChildren().addAll(classes.keySet().stream()
                 .sorted()
                 .map(pack -> {
@@ -144,8 +131,7 @@ public final class MainController  {
                 })
                 .collect(Collectors.toList()));
 
-        // Create Fernflower context
-        this.decompiler = new DandelionDecompiler(openedPath);
+
     }
 
     @FXML
@@ -183,7 +169,10 @@ public final class MainController  {
 
     @FXML
     private void closeFile() {
-        this.decompiler.close();
+        if (this.decompiler != null) {
+            this.decompiler.close();
+        }
+
         this.packageRoot.getChildren().clear();
         this.tabs.getTabs().clear();
     }
