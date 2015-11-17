@@ -30,9 +30,16 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.control.Alert;
 import javafx.scene.control.DialogPane;
+import javafx.scene.control.Tab;
+import javafx.scene.control.TabPane;
 import javafx.scene.control.TreeItem;
+import javafx.scene.control.TreeView;
+import javafx.scene.input.MouseEvent;
 import javafx.stage.FileChooser;
 import net.minecrell.dandelion.Dandelion;
+import net.minecrell.dandelion.decompiler.DandelionDecompiler;
+import org.fxmisc.richtext.CodeArea;
+import org.fxmisc.richtext.LineNumberFactory;
 
 import java.io.File;
 import java.io.IOException;
@@ -52,10 +59,11 @@ public final class MainController  {
 
     private Dandelion dandelion;
 
-    private Path openedPath;
+    private DandelionDecompiler decompiler;
 
-    @FXML
-    private TreeItem<String> packageRoot;
+    @FXML private TreeView<String> packageView;
+    @FXML private TreeItem<String> packageRoot;
+    @FXML private TabPane tabs;
 
     private FileChooser openFileChooser;
     private Alert aboutDialog;
@@ -88,8 +96,6 @@ public final class MainController  {
     }
 
     private void openFile(Path openedPath) throws IOException {
-        this.openedPath = openedPath;
-
         Map<String, TreeItem<String>> packages = new TreeMap<>();
         Set<TreeItem<String>> rootFiles = new TreeSet<>();
 
@@ -126,12 +132,42 @@ public final class MainController  {
 
         packageRoot.getChildren().addAll(packages.values());
         packageRoot.getChildren().addAll(rootFiles);
+
+        // Create Fernflower context
+        this.decompiler = new DandelionDecompiler(openedPath);
+    }
+
+    @FXML
+    private void selectClass(MouseEvent event) throws IOException {
+        if (event.getClickCount() >= 2) {
+            TreeItem<String> item = packageView.getSelectionModel().getSelectedItem();
+            if (item != null && item.getParent().getValue() != null) {
+                String path = item.getParent().getValue().replace('.', '/') + '/' + item.getValue();
+                System.out.println("Open: " + path);
+                openClass(item.getValue(), path);
+            }
+        }
+    }
+
+    private void openClass(String name, String path) throws IOException {
+        String text = this.decompiler.decompile(path);
+
+        CodeArea code = new CodeArea(text);
+        code.setParagraphGraphicFactory(LineNumberFactory.get(code));
+        code.setEditable(false);
+
+        Tab tab = new Tab(name);
+        tab.setContent(code);
+
+        tabs.getTabs().add(tab);
+        tabs.getSelectionModel().select(tab);
     }
 
     @FXML
     private void closeFile() {
-        this.openedPath = null;
+        this.decompiler.close();
         this.packageRoot.getChildren().clear();
+        this.tabs.getTabs().clear();
     }
 
     @FXML

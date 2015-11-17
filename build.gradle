@@ -21,15 +21,15 @@ targetCompatibility = '1.8'
 repositories {
     mavenCentral()
     maven {
-        name = 'forge'
-        url = 'http://files.minecraftforge.net/maven'
+        name = 'minecrell'
+        url = 'http://repo.minecrell.net/snapshots'
     }
 }
 
 // Project dependencies
 dependencies {
     compile 'com.google.guava:guava:18.0'
-    compile 'net.minecraftforge:fernflower:2.0-SNAPSHOT'
+    compile 'net.minecrell:fernflower:2.0-SNAPSHOT'
     compile 'org.fxmisc.richtext:richtextfx:0.6.10'
 
     testCompile 'junit:junit:4.12'

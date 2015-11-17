@@ -5,10 +5,10 @@
 <?import javafx.scene.control.MenuItem?>
 <?import javafx.scene.control.SeparatorMenuItem?>
 <?import javafx.scene.control.SplitPane?>
+<?import javafx.scene.control.TabPane?>
 <?import javafx.scene.control.TreeItem?>
 <?import javafx.scene.control.TreeView?>
 <?import javafx.scene.layout.VBox?>
-<?import org.fxmisc.richtext.CodeArea?>
 <VBox xmlns="http://javafx.com/javafx/8.0.65" xmlns:fx="http://javafx.com/fxml/1"
       fx:controller="net.minecrell.dandelion.ui.MainController" prefWidth="1280" prefHeight="720">
     <MenuBar>
@@ -40,9 +40,10 @@
         </Menu>
     </MenuBar>
     <SplitPane dividerPositions="0.25" VBox.vgrow="ALWAYS">
-        <TreeView showRoot="false" SplitPane.resizableWithParent="false">
+        <TreeView fx:id="packageView" showRoot="false" SplitPane.resizableWithParent="false"
+                  onMouseClicked="#selectClass">
             <TreeItem fx:id="packageRoot"/>
         </TreeView>
-        <CodeArea/>
+        <TabPane fx:id="tabs"/>
     </SplitPane>
 </VBox>
