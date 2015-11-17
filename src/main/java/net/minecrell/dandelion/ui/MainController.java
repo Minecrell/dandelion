@@ -30,6 +30,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.control.Alert;
 import javafx.scene.control.DialogPane;
+import javafx.scene.control.TreeItem;
 import javafx.stage.FileChooser;
 import net.minecrell.dandelion.Dandelion;
 
@@ -37,10 +38,24 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Enumeration;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeMap;
+import java.util.TreeSet;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipFile;
 
 public final class MainController  {
 
+    private static final String CLASS_EXTENSION = ".class";
+
     private Dandelion dandelion;
+
+    private Path openedPath;
+
+    @FXML
+    private TreeItem<String> packageRoot;
 
     private FileChooser openFileChooser;
     private Alert aboutDialog;
@@ -56,9 +71,9 @@ public final class MainController  {
             openFileChooser = new FileChooser();
             openFileChooser.setTitle("Select JAR or class file");
             openFileChooser.getExtensionFilters().addAll(
-                    new FileChooser.ExtensionFilter("JAR file", "*.jar"),
-                    new FileChooser.ExtensionFilter("Class file", "*.class"),
-                    new FileChooser.ExtensionFilter("All files", "*")
+                    new FileChooser.ExtensionFilter("JAR file", "*.jar")
+                    /*new FileChooser.ExtensionFilter("Class file", "*.class"),
+                    new FileChooser.ExtensionFilter("All files", "*")*/
             );
         }
 
@@ -66,10 +81,57 @@ public final class MainController  {
         if (file != null) {
             Path path = file.toPath();
             if (Files.exists(path)) {
-                System.out.println(path.toAbsolutePath());
+                openFile(path);
             }
         }
 
+    }
+
+    private void openFile(Path openedPath) throws IOException {
+        this.openedPath = openedPath;
+
+        Map<String, TreeItem<String>> packages = new TreeMap<>();
+        Set<TreeItem<String>> rootFiles = new TreeSet<>();
+
+        System.out.println("Scanning " + openedPath.toAbsolutePath() + " for classes");
+
+        try (ZipFile zip = new ZipFile(openedPath.toFile())) {
+            Enumeration<? extends ZipEntry> entries = zip.entries();
+            while (entries.hasMoreElements()) {
+                ZipEntry entry = entries.nextElement();
+                // TODO: Display all files
+                if (!entry.getName().endsWith(CLASS_EXTENSION)) {
+                    continue;
+                }
+
+                String name = entry.getName();
+
+                int pos = name.lastIndexOf('/');
+                if (pos >= 0) {
+                    String pack = name.substring(0, pos).replace('/', '.');
+                    name = name.substring(pos + 1, name.length() - CLASS_EXTENSION.length());
+
+                    System.out.println("Found " + pack + ": " + name);
+
+                    TreeItem<String> parent = packages.computeIfAbsent(pack, TreeItem::new);
+                    parent.getChildren().add(new TreeItem<>(name));
+                } else {
+                    name = name.substring(0, name.length() - CLASS_EXTENSION.length());
+                    System.out.println("Found in root: " + name);
+
+                    rootFiles.add(new TreeItem<>(name));
+                }
+            }
+        }
+
+        packageRoot.getChildren().addAll(packages.values());
+        packageRoot.getChildren().addAll(rootFiles);
+    }
+
+    @FXML
+    private void closeFile() {
+        this.openedPath = null;
+        this.packageRoot.getChildren().clear();
     }
 
     @FXML

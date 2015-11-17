@@ -5,6 +5,7 @@
 <?import javafx.scene.control.MenuItem?>
 <?import javafx.scene.control.SeparatorMenuItem?>
 <?import javafx.scene.control.SplitPane?>
+<?import javafx.scene.control.TreeItem?>
 <?import javafx.scene.control.TreeView?>
 <?import javafx.scene.layout.VBox?>
 <?import org.fxmisc.richtext.CodeArea?>
@@ -16,7 +17,7 @@
             <Menu mnemonicParsing="false" text="Open Recent" disable="true"/>
             <SeparatorMenuItem mnemonicParsing="false"/>
             <MenuItem text="_Save…" disable="true"/>
-            <MenuItem text="_Close" disable="true"/>
+            <MenuItem text="_Close" onAction="#closeFile"/>
             <SeparatorMenuItem mnemonicParsing="false"/>
             <MenuItem text="_Quit" onAction="#close"/>
         </Menu>
@@ -39,7 +40,9 @@
         </Menu>
     </MenuBar>
     <SplitPane dividerPositions="0.25" VBox.vgrow="ALWAYS">
-        <TreeView SplitPane.resizableWithParent="false"/>
+        <TreeView showRoot="false" SplitPane.resizableWithParent="false">
+            <TreeItem fx:id="packageRoot"/>
+        </TreeView>
         <CodeArea/>
     </SplitPane>
 </VBox>
