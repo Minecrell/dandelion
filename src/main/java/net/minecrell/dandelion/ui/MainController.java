@@ -171,6 +171,7 @@ public final class MainController  {
     private void closeFile() {
         if (this.decompiler != null) {
             this.decompiler.close();
+            this.decompiler = null;
         }
 
         this.packageRoot.getChildren().clear();
