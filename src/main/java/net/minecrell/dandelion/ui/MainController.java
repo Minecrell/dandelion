@@ -48,7 +48,6 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 public final class MainController  {
@@ -154,25 +153,22 @@ public final class MainController  {
     }
 
     private void openClass(String name, String path) throws IOException {
-        if (this.tabs.getTabs().stream().anyMatch(t ->  t.getText().equals(name))) {
-            Optional<Tab> tab = this.tabs.getTabs().stream().filter(t ->  t.getText().equals(name)).findFirst();
-            if (tab.isPresent()) {
-                this.tabs.getSelectionModel().select(tab.get());
-            }
-        } else {
-            String text = this.decompiler.decompile(path);
+        tabs.getSelectionModel().select(
+                this.tabs.getTabs().stream().filter(t -> t.getText().equals(name)).findFirst().orElseGet(() -> {
+                    String text = this.decompiler.decompile(path);
 
-            CodeArea code = new CodeArea(text);
-            code.setParagraphGraphicFactory(LineNumberFactory.get(code));
-            code.setEditable(false);
-            JavaSyntaxHighlighting.highlight(code);
+                    CodeArea code = new CodeArea(text);
+                    code.setParagraphGraphicFactory(LineNumberFactory.get(code));
+                    code.setEditable(false);
+                    JavaSyntaxHighlighting.highlight(code);
 
-            Tab tab = new Tab(name);
-            tab.setContent(code);
+                    Tab tab = new Tab(name);
+                    tab.setContent(code);
 
-            tabs.getTabs().add(tab);
-            tabs.getSelectionModel().select(tab);
-        }
+                    tabs.getTabs().add(tab);
+                    return tab;
+                })
+        );
     }
 
     @FXML
