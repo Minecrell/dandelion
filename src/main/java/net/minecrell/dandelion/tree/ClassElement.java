@@ -23,8 +23,6 @@ package net.minecrell.dandelion.tree;
 
 import static java.util.Objects.requireNonNull;
 
-import com.google.common.base.MoreObjects;
-
 import java.util.Objects;
 
 public class ClassElement extends ClassTreeElement {

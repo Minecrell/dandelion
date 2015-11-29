@@ -21,8 +21,6 @@
  */
 package net.minecrell.dandelion.tree;
 
-import com.google.common.base.MoreObjects;
-
 import java.util.Optional;
 
 public class ClassTreeElement {
