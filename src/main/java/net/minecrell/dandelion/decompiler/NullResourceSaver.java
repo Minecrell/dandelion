@@ -25,7 +25,7 @@ import org.jetbrains.java.decompiler.main.extern.IResultSaver;
 
 import java.util.jar.Manifest;
 
-public class NullResourceSaver implements IResultSaver {
+public final class NullResourceSaver implements IResultSaver {
 
     public static final IResultSaver INSTANCE = new NullResourceSaver();
 
