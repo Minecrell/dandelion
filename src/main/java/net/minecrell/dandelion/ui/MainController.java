@@ -34,6 +34,7 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.DialogPane;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
+import javafx.scene.control.Tooltip;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
 import javafx.scene.input.MouseEvent;
@@ -163,6 +164,7 @@ public final class MainController  {
 
                     Tab tab = new Tab(element.getClassName());
                     tab.setId(id);
+                    tab.setTooltip(new Tooltip(element.getQualifiedName()));
                     tab.setContent(code);
 
                     tabs.getTabs().add(tab);
