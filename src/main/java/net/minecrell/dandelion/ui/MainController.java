@@ -40,6 +40,8 @@ import javafx.scene.input.MouseEvent;
 import javafx.stage.FileChooser;
 import net.minecrell.dandelion.Dandelion;
 import net.minecrell.dandelion.decompiler.DandelionDecompiler;
+import net.minecrell.dandelion.tree.ClassElement;
+import net.minecrell.dandelion.tree.ClassTreeElement;
 import net.minecrell.dandelion.ui.syntax.JavaSyntaxHighlighting;
 import org.fxmisc.richtext.CodeArea;
 import org.fxmisc.richtext.LineNumberFactory;
@@ -53,14 +55,13 @@ import java.util.stream.Collectors;
 public final class MainController  {
 
     private static final String CLASS_EXTENSION = ".class";
-    private static final String DEFAULT_PACKAGE = "(Default package)";
 
     private Dandelion dandelion;
 
     private DandelionDecompiler decompiler;
 
-    @FXML private TreeView<String> packageView;
-    @FXML private TreeItem<String> packageRoot;
+    @FXML private TreeView<ClassTreeElement> packageView;
+    @FXML private TreeItem<ClassTreeElement> packageRoot;
     @FXML private TabPane tabs;
 
     private FileChooser openFileChooser;
@@ -115,17 +116,17 @@ public final class MainController  {
                 classes.put(pack, name);
             } else if (name.indexOf('$') == -1) {
                 System.out.println("Found in root: " + name);
-                classes.put(DEFAULT_PACKAGE, name);
+                classes.put(null, name);
             }
         });
 
         packageRoot.getChildren().addAll(classes.keySet().stream()
                 .sorted()
                 .map(pack -> {
-                    TreeItem<String> root = new TreeItem<>(pack);
+                    TreeItem<ClassTreeElement> root = new TreeItem<>(new ClassTreeElement(pack));
                     root.getChildren().addAll(classes.get(pack).stream()
                             .sorted()
-                            .map(TreeItem::new)
+                            .map(className -> new TreeItem<ClassTreeElement>(new ClassElement(pack, className)))
                             .collect(Collectors.toList()));
                     return root;
                 })
@@ -137,24 +138,22 @@ public final class MainController  {
     @FXML
     private void selectClass(MouseEvent event) throws IOException {
         if (event.getClickCount() >= 2) {
-            TreeItem<String> item = packageView.getSelectionModel().getSelectedItem();
-            if (item != null && item.getParent().getValue() != null) {
-                String path;
-                if (item.getParent().getValue().equals(DEFAULT_PACKAGE)) {
-                    path = item.getValue();
-                } else {
-                    path = item.getParent().getValue().replace('.', '/') + '/' + item.getValue();
-                }
+            TreeItem<ClassTreeElement> item = packageView.getSelectionModel().getSelectedItem();
+            if (item != null && (item.getValue() instanceof ClassElement)) {
+                ClassElement element = (ClassElement) item.getValue();
+                String path = element.getPath();
 
                 System.out.println("Open: " + path);
-                openClass(item.getValue(), path);
+                openClass(element, path);
             }
         }
     }
 
-    private void openClass(String name, String path) throws IOException {
+    private void openClass(ClassElement element, String path) throws IOException {
+        final String id = element.getQualifiedName().replace('.', '_');
+
         tabs.getSelectionModel().select(
-                this.tabs.getTabs().stream().filter(t -> t.getText().equals(name)).findFirst().orElseGet(() -> {
+                this.tabs.getTabs().stream().filter(t -> t.getId().equals(id)).findFirst().orElseGet(() -> {
                     String text = this.decompiler.decompile(path);
 
                     CodeArea code = new CodeArea(text);
@@ -162,7 +161,8 @@ public final class MainController  {
                     code.setEditable(false);
                     JavaSyntaxHighlighting.highlight(code);
 
-                    Tab tab = new Tab(name);
+                    Tab tab = new Tab(element.getClassName());
+                    tab.setId(id);
                     tab.setContent(code);
 
                     tabs.getTabs().add(tab);
