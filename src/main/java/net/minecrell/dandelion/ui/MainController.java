@@ -21,6 +21,7 @@
  */
 package net.minecrell.dandelion.ui;
 
+import static com.google.common.base.Strings.emptyToNull;
 import static javafx.scene.control.Alert.AlertType.INFORMATION;
 import static net.minecrell.dandelion.Dandelion.NAME;
 import static net.minecrell.dandelion.Dandelion.VERSION;
@@ -117,17 +118,17 @@ public final class MainController  {
                 classes.put(pack, name);
             } else if (name.indexOf('$') == -1) {
                 System.out.println("Found in root: " + name);
-                classes.put(null, name);
+                classes.put("", name);
             }
         });
 
         packageRoot.getChildren().addAll(classes.keySet().stream()
                 .sorted()
                 .map(pack -> {
-                    TreeItem<ClassTreeElement> root = new TreeItem<>(new ClassTreeElement(pack));
+                    TreeItem<ClassTreeElement> root = new TreeItem<>(new ClassTreeElement(emptyToNull(pack)));
                     root.getChildren().addAll(classes.get(pack).stream()
                             .sorted()
-                            .map(className -> new TreeItem<ClassTreeElement>(new ClassElement(pack, className)))
+                            .map(className -> new TreeItem<ClassTreeElement>(new ClassElement(emptyToNull(pack), className)))
                             .collect(Collectors.toList()));
                     return root;
                 })
