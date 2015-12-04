@@ -21,6 +21,8 @@
  */
 package net.minecrell.dandelion.tree;
 
+import static com.google.common.base.Strings.emptyToNull;
+
 import java.util.Optional;
 
 public class ClassTreeElement {
@@ -30,7 +32,7 @@ public class ClassTreeElement {
     protected final Optional<String> pack;
 
     public ClassTreeElement(String pack) {
-        this.pack = Optional.ofNullable(pack);
+        this.pack = Optional.ofNullable(emptyToNull(pack));
     }
 
     public Optional<String> getPackage() {
