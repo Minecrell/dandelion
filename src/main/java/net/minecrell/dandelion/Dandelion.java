@@ -27,6 +27,7 @@ import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.image.Image;
 import javafx.stage.Stage;
 
 public class Dandelion extends Application {
@@ -68,6 +69,7 @@ public class Dandelion extends Application {
         scene.getStylesheets().add("css/dandelion.css");
 
         primaryStage.setTitle(NAME);
+        primaryStage.getIcons().add(new Image("img/dandelion.png"));
 
         primaryStage.setScene(scene);
         primaryStage.show();
