@@ -1,3 +1,9 @@
+buildscript {
+    dependencies {
+        classpath 'net.sf.proguard:proguard-gradle:5.2.1'
+    }
+}
+
 // Apply Gradle plugins
 plugins {
     id 'java'
@@ -5,7 +11,6 @@ plugins {
     id 'idea'
 
     id 'com.github.hierynomus.license' version '0.11.0'
-    id 'com.github.johnrengelman.shadow' version '1.2.2'
 }
 
 defaultTasks 'clean', 'licenseFormat', 'build'
@@ -16,6 +21,10 @@ version = '1.0.0-SNAPSHOT'
 
 sourceCompatibility = '1.8'
 targetCompatibility = '1.8'
+
+configurations { provided }
+sourceSets.main.compileClasspath += configurations.provided
+idea.module.scopes.PROVIDED.plus += [configurations.provided]
 
 // Project repositories
 repositories {
@@ -31,6 +40,8 @@ dependencies {
     compile 'com.google.guava:guava:19.0'
     compile 'net.minecrell:fernflower:2.0-SNAPSHOT'
     compile 'org.fxmisc.richtext:richtextfx:0.6.10'
+
+    provided 'com.google.code.findbugs:jsr305:3.0.1'
 
     testCompile 'junit:junit:4.12'
 }
@@ -51,6 +62,7 @@ processResources {
     from 'LICENSE'
 }
 
+ext.output = jar.archivePath
 jar {
     classifier = 'base'
 
@@ -63,9 +75,34 @@ jar {
     }
 }
 
-shadowJar {
-    classifier = ''
+task proguard(type: proguard.gradle.ProGuardTask, dependsOn: 'jar') {
+    ext.javaHome = System.properties['java.home']
+    libraryjars "$javaHome/lib/rt.jar"
+    libraryjars "$javaHome/lib/ext/jfxrt.jar"
+    libraryjars configurations.provided
+
+    injars jar.archivePath
+    injars configurations.compile
+    outjars output
+
+    keep 'class net.minecrell.dandelion.** {*;}'
+
+    dontwarn 'com.google.common.**'
+    dontobfuscate
+    dontoptimize
 }
+
+task sourceJar(type: Jar) {
+    classifier = 'sources'
+    from sourceSets.main.allSource
+}
+
+artifacts {
+    archives output
+    archives sourceJar
+}
+
+assemble.dependsOn 'proguard'
 
 // License header formatting
 license {
@@ -78,16 +115,6 @@ license {
     mapping {
         java = 'SLASHSTAR_STYLE'
     }
-}
-
-task sourceJar(type: Jar) {
-    classifier = 'sources'
-    from sourceSets.main.allSource
-}
-
-artifacts {
-    archives shadowJar
-    archives sourceJar
 }
 
 task wrapper(type: Wrapper) {
