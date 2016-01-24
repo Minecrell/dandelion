@@ -39,6 +39,8 @@ import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
 import javafx.scene.input.MouseEvent;
 import javafx.stage.FileChooser;
+import javafx.stage.Modality;
+import javafx.stage.StageStyle;
 import net.minecrell.dandelion.Dandelion;
 import net.minecrell.dandelion.decompiler.DandelionDecompiler;
 import net.minecrell.dandelion.tree.ClassElement;
@@ -189,6 +191,7 @@ public final class MainController  {
         if (aboutDialog == null) {
             aboutDialog = new Alert(INFORMATION);
             aboutDialog.initOwner(dandelion.getPrimaryStage());
+            aboutDialog.initStyle(StageStyle.UTILITY);
 
             aboutDialog.setTitle("About " + NAME);
             aboutDialog.setHeaderText(NAME + ' ' + VERSION);

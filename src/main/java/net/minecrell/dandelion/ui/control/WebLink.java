@@ -41,7 +41,7 @@ public class WebLink extends Hyperlink {
             }
 
             try { // Try the Linux way instead
-                new ProcessBuilder("xdg-open", url).start();
+                new ProcessBuilder("xdg-open", url).inheritIO().start();
             } catch (IOException ignored) {
             }
         });
