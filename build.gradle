@@ -5,7 +5,7 @@ plugins {
     id 'idea'
 
     id 'com.github.hierynomus.license' version '0.11.0'
-    id 'com.github.johnrengelman.shadow' version '1.2.2'
+    id 'com.github.johnrengelman.shadow' version '1.2.3'
 }
 
 defaultTasks 'clean', 'licenseFormat', 'build'
@@ -91,5 +91,5 @@ artifacts {
 }
 
 task wrapper(type: Wrapper) {
-    gradleVersion = '2.10'
+    gradleVersion = '2.11'
 }
