@@ -27,7 +27,6 @@ import static com.google.common.base.Preconditions.checkNotNull;
 import com.google.common.base.Joiner;
 import com.google.common.base.Splitter;
 import com.google.common.collect.ImmutableList;
-import com.sun.istack.internal.Nullable;
 
 import java.util.Objects;
 import java.util.Optional;
@@ -61,7 +60,7 @@ public final class PackageElement implements Comparable<PackageElement> {
         this(type, packageElements, null);
     }
 
-    public PackageElement(Type type, ImmutableList<String> packageElements, @Nullable String memberName) {
+    public PackageElement(Type type, ImmutableList<String> packageElements, String memberName) {
         this.type = checkNotNull(type, "type");
         checkNotNull(packageElements, "packageElements");
         this.packageElements = packageElements;
