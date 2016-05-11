@@ -19,6 +19,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
+
 package net.minecrell.dandelion.decompiler;
 
 import org.jetbrains.java.decompiler.main.Fernflower;
