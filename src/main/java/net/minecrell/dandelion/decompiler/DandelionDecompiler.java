@@ -21,29 +21,25 @@
  */
 package net.minecrell.dandelion.decompiler;
 
-import com.google.common.io.ByteStreams;
 import org.jetbrains.java.decompiler.main.Fernflower;
 import org.jetbrains.java.decompiler.main.decompiler.PrintStreamLogger;
-import org.jetbrains.java.decompiler.main.extern.IBytecodeProvider;
+import org.jetbrains.java.decompiler.struct.FileStructContext;
 import org.jetbrains.java.decompiler.struct.StructClass;
 
 import java.io.IOException;
-import java.io.InputStream;
-import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
+import java.util.Set;
 import java.util.stream.Stream;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipFile;
 
-public class DandelionDecompiler implements IBytecodeProvider, AutoCloseable {
+public class DandelionDecompiler implements AutoCloseable {
 
     private final Fernflower fernflower;
 
-    public DandelionDecompiler(Path source) {
-        this.fernflower = new Fernflower(this, NullResourceSaver.INSTANCE, null, new PrintStreamLogger(System.out));
-        this.fernflower.getStructContext().addSpace(source.toFile(), true);
-        this.fernflower.decompileContext(false);
+    public DandelionDecompiler(Path source) throws IOException {
+        FileStructContext context = new FileStructContext();
+        this.fernflower = new Fernflower(context, null, new PrintStreamLogger(System.out));
+        context.scan(source, true);
+        this.fernflower.decompileContext();
     }
 
     public Stream<String> getClasses() {
@@ -51,29 +47,23 @@ public class DandelionDecompiler implements IBytecodeProvider, AutoCloseable {
                 .map(structClass -> structClass.qualifiedName);
     }
 
+
+    public Set<String> getResources() {
+        return this.fernflower.getStructContext().getResources();
+    }
+
     public String decompile(String name) {
         StructClass structClass = this.fernflower.getStructContext().getClass(name);
         return this.fernflower.getClassContent(structClass);
     }
 
-    @Override
-    public byte[] getBytecode(String externalPath, String internalPath) throws IOException {
-        Path path = Paths.get(externalPath);
-        if (internalPath != null) {
-            try (ZipFile zip = new ZipFile(path.toFile())) {
-                ZipEntry entry = zip.getEntry(internalPath);
-                try (InputStream in = zip.getInputStream(entry)) {
-                    return ByteStreams.toByteArray(in);
-                }
-            }
-        } else {
-            return Files.readAllBytes(path);
-        }
+    public byte[] getResource(String path) throws IOException {
+        return this.fernflower.getStructContext().readResource(path);
     }
 
     @Override
-    public void close() {
-        this.fernflower.clearContext();
+    public void close() throws IOException {
+        this.fernflower.close();
     }
 
 }

@@ -29,7 +29,7 @@ repositories {
 // Project dependencies
 dependencies {
     compile 'com.google.guava:guava:19.0'
-    compile 'net.minecrell:fernflower:2.0-SNAPSHOT'
+    compile 'net.minecrell:fernflower:2.1-SNAPSHOT'
     compile 'org.fxmisc.richtext:richtextfx:0.6.10'
 
     testCompile 'junit:junit:4.12'

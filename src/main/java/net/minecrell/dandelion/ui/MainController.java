@@ -25,8 +25,10 @@ import static javafx.scene.control.Alert.AlertType.INFORMATION;
 import static net.minecrell.dandelion.Dandelion.NAME;
 import static net.minecrell.dandelion.Dandelion.VERSION;
 
-import com.google.common.collect.HashMultimap;
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Multimap;
+import com.google.common.collect.Ordering;
+import com.google.common.collect.TreeMultimap;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
@@ -39,21 +41,21 @@ import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
 import javafx.scene.input.MouseEvent;
 import javafx.stage.FileChooser;
-import javafx.stage.Modality;
 import javafx.stage.StageStyle;
 import net.minecrell.dandelion.Dandelion;
 import net.minecrell.dandelion.decompiler.DandelionDecompiler;
-import net.minecrell.dandelion.tree.ClassElement;
-import net.minecrell.dandelion.tree.ClassTreeElement;
+import net.minecrell.dandelion.tree.PackageElement;
 import net.minecrell.dandelion.ui.syntax.JavaSyntaxHighlighting;
+import net.minecrell.dandelion.util.ListComparator;
 import org.fxmisc.richtext.CodeArea;
 import org.fxmisc.richtext.LineNumberFactory;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.stream.Collectors;
+import java.util.Optional;
 
 public final class MainController  {
 
@@ -63,8 +65,8 @@ public final class MainController  {
 
     private DandelionDecompiler decompiler;
 
-    @FXML private TreeView<ClassTreeElement> packageView;
-    @FXML private TreeItem<ClassTreeElement> packageRoot;
+    @FXML private TreeView<PackageElement> packageView;
+    @FXML private TreeItem<PackageElement> packageRoot;
     @FXML private TabPane tabs;
 
     private FileChooser openFileChooser;
@@ -90,6 +92,7 @@ public final class MainController  {
         File file = openFileChooser.showOpenDialog(dandelion.getPrimaryStage());
         if (file != null) {
             Path path = file.toPath();
+
             if (Files.exists(path)) {
                 openFile(path);
             }
@@ -103,80 +106,104 @@ public final class MainController  {
         // Create Fernflower context
         this.decompiler = new DandelionDecompiler(openedPath);
 
-        // TODO: Optimize class scanning (Don't code when tired)
-        Multimap<String, String> classes = HashMultimap.create();
+        Multimap<ImmutableList<String>, PackageElement> elements = TreeMultimap.create(ListComparator.get(), Ordering.natural());
 
-        this.decompiler.getClasses().forEach(name -> {
-            int pos = name.lastIndexOf('/');
-            if (pos >= 0) {
-                String pack = name.substring(0, pos).replace('/', '.');
-                name = name.substring(pos + 1);
-                if (name.indexOf('$') >= 0) {
-                    return;
-                }
-
-                System.out.println("Found " + pack + ": " + name);
-                classes.put(pack, name);
-            } else if (name.indexOf('$') == -1) {
-                System.out.println("Found in root: " + name);
-                classes.put("", name);
+        this.decompiler.getClasses().forEach(path -> {
+            if (path.lastIndexOf('$') >= 0) {
+                return;
             }
+
+            PackageElement element = PackageElement.fromPath(PackageElement.Type.CLASS, path);
+            System.out.println("Found class: " + element.getPath());
+            elements.put(element.getPackage(), element);
         });
 
-        packageRoot.getChildren().addAll(classes.keySet().stream()
-                .sorted()
-                .map(pack -> {
-                    TreeItem<ClassTreeElement> root = new TreeItem<>(new ClassTreeElement(pack));
-                    root.getChildren().addAll(classes.get(pack).stream()
-                            .sorted()
-                            .map(className -> new TreeItem<ClassTreeElement>(new ClassElement(pack, className)))
-                            .collect(Collectors.toList()));
-                    return root;
-                })
-                .collect(Collectors.toList()));
+        for (String path : this.decompiler.getResources()) {
+            if (path.endsWith(CLASS_EXTENSION)) {
+                continue;
+            }
 
+            PackageElement element = PackageElement.fromPath(PackageElement.Type.RESOURCE, path);
+            System.out.println("Found resource: " + element.getPath());
+            elements.put(element.getPackage(), element);
+        }
 
+        elements.asMap().forEach((pack, packageElements) -> {
+            TreeItem<PackageElement> root = new TreeItem<>(new PackageElement(PackageElement.Type.PACKAGE, pack));
+            for (PackageElement element : packageElements) {
+                root.getChildren().add(new TreeItem<>(element));
+            }
+            this.packageRoot.getChildren().add(root);
+        });
     }
 
     @FXML
     private void selectClass(MouseEvent event) throws IOException {
         if (event.getClickCount() >= 2) {
-            TreeItem<ClassTreeElement> item = packageView.getSelectionModel().getSelectedItem();
-            if (item != null && (item.getValue() instanceof ClassElement)) {
-                ClassElement element = (ClassElement) item.getValue();
-                String path = element.getPath();
+            TreeItem<PackageElement> item = this.packageView.getSelectionModel().getSelectedItem();
+            if (item != null && item.getValue().getType().isMember()) {
+                PackageElement element = item.getValue();
+                if (selectExistingTab(element)) {
+                    return;
+                }
 
-                System.out.println("Open: " + path);
-                openClass(element, path);
+                switch (element.getType()) {
+                    case CLASS:
+                        System.out.println("Open class: " + element.getPath());
+                        openClass(element);
+                        break;
+                    case RESOURCE:
+                        System.out.println("Open resource: " + element.getPath());
+                        openResource(element);
+                        break;
+                }
             }
         }
     }
 
-    private void openClass(ClassElement element, String path) throws IOException {
-        final String id = element.getQualifiedName().replace('.', '_');
+    private boolean selectExistingTab(PackageElement element) {
+        final String id = Integer.toString(element.hashCode()); // TODO
+        Optional<Tab> tab = this.tabs.getTabs().stream().filter(t -> t.getId().equals(id)).findFirst();
+        if (tab.isPresent()) {
+            this.tabs.getSelectionModel().select(tab.get());
+            return true;
+        } else {
+            return false;
+        }
+    }
 
-        tabs.getSelectionModel().select(
-                this.tabs.getTabs().stream().filter(t -> t.getId().equals(id)).findFirst().orElseGet(() -> {
-                    String text = this.decompiler.decompile(path);
+    private static CodeArea createCodeArea(String text) {
+        CodeArea code = new CodeArea(text);
+        code.setParagraphGraphicFactory(LineNumberFactory.get(code));
+        code.setEditable(false);
+        return code;
+    }
 
-                    CodeArea code = new CodeArea(text);
-                    code.setParagraphGraphicFactory(LineNumberFactory.get(code));
-                    code.setEditable(false);
-                    JavaSyntaxHighlighting.highlight(code);
+    private void openClass(PackageElement element) throws IOException {
+        String text = this.decompiler.decompile(element.getPath());
+        CodeArea code = createCodeArea(text);
+        JavaSyntaxHighlighting.highlight(code);
+        addTab(element, code);
+    }
 
-                    Tab tab = new Tab(element.getClassName());
-                    tab.setId(id);
-                    tab.setTooltip(new Tooltip(element.getQualifiedName()));
-                    tab.setContent(code);
+    private void openResource(PackageElement element) throws IOException {
+        // TODO: Detect text
+        String text = new String(this.decompiler.getResource(element.getPath()), StandardCharsets.UTF_8);
+        addTab(element, createCodeArea(text));
+    }
 
-                    tabs.getTabs().add(tab);
-                    return tab;
-                })
-        );
+    private void addTab(PackageElement element, CodeArea code) {
+        Tab tab = new Tab(element.getName());
+        tab.setId(Integer.toString(element.hashCode())); // TODO
+        tab.setTooltip(new Tooltip(element.getPath()));
+        tab.setContent(code);
+
+        this.tabs.getTabs().add(tab);
+        this.tabs.getSelectionModel().select(tab);
     }
 
     @FXML
-    private void closeFile() {
+    private void closeFile() throws IOException {
         if (this.decompiler != null) {
             this.decompiler.close();
             this.decompiler = null;
